@@ -26,6 +26,7 @@ grumphp:
         paths: []
     tasks:
         phpstan: ~
-        phpcsfixer: ~
+        phpcsfixer:
+            config: .php-cs-fixer.dist.php
     testsuites: []
     extensions: []

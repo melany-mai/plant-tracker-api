@@ -31,3 +31,6 @@ install:
 
 grumphp:
 	docker compose exec php vendor/bin/grumphp run
+
+entity:
+	docker compose exec php bin/console make:entity
