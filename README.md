@@ -10,7 +10,7 @@ Personal Symfony 8 + FrankenPHP + PostgreSQL + Docker template, ready to use.
 - **Docker** / Docker Compose
 - **PHP CS Fixer** (automatic PSR-12 code formatting)
 - **PHPStan** (static analysis, level 6)
-- **GrumPHP** (automatic git hooks)
+- **GrumPHP** (automatic Git hooks)
 
 ## Requirements
 
