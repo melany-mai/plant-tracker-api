@@ -3,13 +3,50 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\Dto\PlantInput;
+use App\Dto\PlantOutput;
 use App\Repository\PlantRepository;
+use App\State\PlantProcessor;
+use App\State\PlantProvider;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: PlantRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            security: "is_granted('ROLE_USER')",
+            provider: PlantProvider::class,
+        ),
+        new Get(
+            security: "is_granted('ROLE_USER')",
+            provider: PlantProvider::class,
+        ),
+        new Post(
+            security: "is_granted('ROLE_USER')",
+            input: PlantInput::class,
+            output: PlantOutput::class,
+            processor: PlantProcessor::class,
+        ),
+        new Put(
+            security: "is_granted('ROLE_USER')",
+            input: PlantInput::class,
+            output: PlantOutput::class,
+            provider: PlantProvider::class,
+            processor: PlantProcessor::class,
+        ),
+        new Delete(
+            security: "is_granted('ROLE_USER') and object.getOwner() == user",
+        ),
+    ],
+    output: PlantOutput::class,
+)]
 class Plant
 {
     use TimestampableEntity;
@@ -39,6 +76,10 @@ class Plant
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Species $species = null;
+
+    #[ORM\ManyToOne(inversedBy: 'plants')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
 
     public function getId(): ?int
     {
@@ -125,6 +166,18 @@ class Plant
     public function setSpecies(?Species $species): static
     {
         $this->species = $species;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }
