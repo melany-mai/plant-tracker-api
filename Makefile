@@ -34,3 +34,6 @@ grumphp:
 
 entity:
 	docker compose exec php bin/console make:entity
+
+cache:
+	docker compose exec php bin/console cache:clear

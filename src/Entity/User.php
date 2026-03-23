@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Repository\UserRepository;
 use App\State\UserPasswordHasher;
@@ -23,6 +25,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Post('/register', security: "is_granted('PUBLIC_ACCESS')", validationContext: ['groups' => ['Default',
             'user:create']], name: 'api_register', processor: UserPasswordHasher::class),
+        new Delete(security: "is_granted('ROLE_ADMIN')"),
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:create']],

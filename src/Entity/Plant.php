@@ -8,7 +8,11 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Dto\PlantInput;
+use App\Dto\PlantOutput;
 use App\Repository\PlantRepository;
+use App\State\PlantProcessor;
+use App\State\PlantProvider;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -16,12 +20,32 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Entity(repositoryClass: PlantRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(security: "is_granted('ROLE_USER')"),
-        new Post(security: "is_granted('ROLE_USER')"),
-        new Get(security: "is_granted('ROLE_USER') and object.getOwner() == user"),
-        new Put(security: "is_granted('ROLE_USER') and object.getOwner() == user"),
-        new Delete(security: "is_granted('ROLE_USER') and object.getOwner() == user"),
-    ]
+        new GetCollection(
+            security: "is_granted('ROLE_USER')",
+            provider: PlantProvider::class,
+        ),
+        new Get(
+            security: "is_granted('ROLE_USER')",
+            provider: PlantProvider::class,
+        ),
+        new Post(
+            security: "is_granted('ROLE_USER')",
+            input: PlantInput::class,
+            output: PlantOutput::class,
+            processor: PlantProcessor::class,
+        ),
+        new Put(
+            security: "is_granted('ROLE_USER')",
+            input: PlantInput::class,
+            output: PlantOutput::class,
+            provider: PlantProvider::class,
+            processor: PlantProcessor::class,
+        ),
+        new Delete(
+            security: "is_granted('ROLE_USER') and object.getOwner() == user",
+        ),
+    ],
+    output: PlantOutput::class,
 )]
 class Plant
 {

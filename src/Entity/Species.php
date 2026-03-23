@@ -8,17 +8,44 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Dto\SpeciesInput;
+use App\Dto\SpeciesOutput;
 use App\Repository\SpeciesRepository;
+use App\State\SpeciesProcessor;
+use App\State\SpeciesProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: SpeciesRepository::class)]
-#[ApiResource(security: "is_granted('ROLE_USER')")]
-#[Get]
-#[Put(security: "is_granted('ROLE_ADMIN')")]
-#[Post(security: "is_granted('ROLE_ADMIN')")]
-#[Delete(security: "is_granted('ROLE_ADMIN')")]
-#[GetCollection]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            security: "is_granted('ROLE_USER')",
+            provider: SpeciesProvider::class,
+        ),
+        new Get(
+            security: "is_granted('ROLE_USER')",
+            provider: SpeciesProvider::class,
+        ),
+        new Post(
+            security: "is_granted('ROLE_ADMIN')",
+            input: SpeciesInput::class,
+            output: SpeciesOutput::class,
+            processor: SpeciesProcessor::class,
+        ),
+        new Put(
+            security: "is_granted('ROLE_ADMIN')",
+            input: SpeciesInput::class,
+            output: SpeciesOutput::class,
+            provider: SpeciesProvider::class,
+            processor: SpeciesProcessor::class,
+        ),
+        new Delete(
+            security: "is_granted('ROLE_ADMIN')",
+        ),
+    ],
+    output: SpeciesOutput::class,
+)]
 class Species
 {
     use TimestampableEntity;

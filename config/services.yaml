@@ -23,5 +23,11 @@ services:
         bind:
             $processor: "@api_platform.doctrine.orm.state.persist_processor"
 
+    Gedmo\Timestampable\TimestampableListener:
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+            - { name: doctrine.event_listener, event: onFlush }
+            - { name: doctrine.event_listener, event: loadClassMetadata }
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
