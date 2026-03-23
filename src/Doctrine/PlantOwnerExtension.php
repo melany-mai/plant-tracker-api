@@ -34,6 +34,8 @@ class PlantOwnerExtension implements QueryCollectionExtensionInterface, QueryIte
 
         $user = $this->security->getUser();
         if (null === $user) {
+            $queryBuilder->andWhere('1 = 0');
+
             return;
         }
 
