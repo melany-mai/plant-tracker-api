@@ -23,6 +23,14 @@ services:
         bind:
             $processor: "@api_platform.doctrine.orm.state.persist_processor"
 
+    App\OpenApi\LogoutOpenApiDecorator:
+        decorates: api_platform.openapi.factory
+
+    App\EventSubscriber\RateLimitSubscriber:
+        arguments:
+            $authLimiter: '@limiter.auth'
+            $registerLimiter: '@limiter.register'
+
     Gedmo\Timestampable\TimestampableListener:
         tags:
             - { name: doctrine.event_listener, event: prePersist }
