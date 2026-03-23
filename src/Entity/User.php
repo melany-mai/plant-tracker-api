@@ -48,6 +48,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:create'])]
     private ?string $plainPassword = null;
 
+    /**
+     * @var list<string>
+     */
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
@@ -56,6 +59,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     private ?string $username = null;
 
+    /** @var Collection<int, Plant> */
     #[ORM\OneToMany(targetEntity: Plant::class, mappedBy: 'owner')]
     private Collection $plants;
 

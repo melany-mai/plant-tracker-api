@@ -14,12 +14,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: PlantRepository::class)]
-#[ApiResource(security: "is_granted('ROLE_USER')")]
-#[Get]
-#[Put(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
-#[Post(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
-#[Delete(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
-#[GetCollection]
+#[ApiResource(
+    operations: [
+        new GetCollection(security: "is_granted('ROLE_USER')"),
+        new Post(security: "is_granted('ROLE_USER')"),
+        new Get(security: "is_granted('ROLE_USER') and object.getOwner() == user"),
+        new Put(security: "is_granted('ROLE_USER') and object.getOwner() == user"),
+        new Delete(security: "is_granted('ROLE_USER') and object.getOwner() == user"),
+    ]
+)]
 class Plant
 {
     use TimestampableEntity;
