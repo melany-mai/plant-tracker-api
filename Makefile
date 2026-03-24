@@ -19,6 +19,9 @@ migration:
 migrate:
 	docker compose exec php bin/console doctrine:migrations:migrate
 
+fixtures:
+	docker compose exec php bin/console doctrine:fixtures:load
+
 cs-fix:
 	docker compose exec php vendor/bin/php-cs-fixer fix
 
