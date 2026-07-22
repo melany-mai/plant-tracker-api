@@ -82,7 +82,7 @@ abstract class AbstractApiTestCase extends WebTestCase
         ?array $body = null,
     ): array {
         $headers = [
-            'CONTENT_TYPE' => 'application/json',
+            'CONTENT_TYPE' => 'application/ld+json',
             'HTTP_ACCEPT' => 'application/ld+json',
         ];
 
