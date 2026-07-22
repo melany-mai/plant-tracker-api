@@ -59,7 +59,7 @@ jobs:
       - name: Generate JWT keypair
         run: docker compose exec -T php bin/console lexik:jwt:generate-keypair --overwrite -e test
       - name: Run PHPUnit
-        run: docker compose exec -T php bin/phpunit
+        run: docker compose exec -T php vendor/bin/phpunit
 
   lint:
     name: Lint
