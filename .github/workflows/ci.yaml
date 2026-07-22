@@ -51,6 +51,15 @@ jobs:
         run: docker compose exec -T php bin/console -e test doctrine:migrations:migrate --no-interaction
       - name: Doctrine Schema Validator
         run: docker compose exec -T php bin/console -e test doctrine:schema:validate
+      - name: Set up JWT test environment
+        run: |
+          echo "JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem" >> .env.test.local
+          echo "JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem" >> .env.test.local
+          echo "JWT_PASSPHRASE=${{ secrets.JWT_PASSPHRASE }}" >> .env.test.local
+      - name: Generate JWT keypair
+        run: docker compose exec -T php bin/console lexik:jwt:generate-keypair --overwrite -e test
+      - name: Run PHPUnit
+        run: docker compose exec -T php vendor/bin/phpunit
 
   lint:
     name: Lint

@@ -55,6 +55,7 @@
 /.env.local
 /.env.local.php
 /.env.*.local
+/.env.test.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
@@ -74,3 +75,8 @@ phpstan.neon
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
