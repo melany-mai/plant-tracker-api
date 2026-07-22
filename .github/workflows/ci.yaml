@@ -57,7 +57,7 @@ jobs:
           echo "JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem" >> .env.test.local
           echo "JWT_PASSPHRASE=${{ secrets.JWT_PASSPHRASE }}" >> .env.test.local
       - name: Generate JWT keypair
-        run: docker compose exec -T php bin/console lexik:jwt:generate-keypair --overwrite
+        run: docker compose exec -T php bin/console lexik:jwt:generate-keypair --overwrite -e test
       - name: Run PHPUnit
         run: docker compose exec -T php bin/phpunit
 
