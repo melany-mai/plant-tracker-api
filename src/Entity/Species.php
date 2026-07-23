@@ -45,6 +45,8 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
         ),
     ],
     output: SpeciesOutput::class,
+    paginationEnabled: true,
+    paginationItemsPerPage: 10,
 )]
 class Species
 {
