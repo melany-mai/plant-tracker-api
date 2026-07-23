@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Plant;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,28 +18,25 @@ class PlantRepository extends ServiceEntityRepository
         parent::__construct($registry, Plant::class);
     }
 
-    //    /**
-    //     * @return Plant[] Returns an array of Plant objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Returns a paginated subset of plants belonging to the given user.
+     *
+     * The WHERE owner = :user clause enforces data isolation at the query level,
+     * in addition to the filtering already done in PlantProvider.
+     * The Doctrine Paginator handles COUNT(*) + LIMIT/OFFSET automatically.
+     *
+     * @return Paginator<Plant>
+     */
+    public function findByOwnerPaginated(User $user, int $offset, int $limit): Paginator
+    {
+        $query = $this->createQueryBuilder('p')
+            ->andWhere('p.owner = :owner')
+            ->setParameter('owner', $user)
+            ->orderBy('p.id', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery();
 
-    //    public function findOneBySomeField($value): ?Plant
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return new Paginator($query, fetchJoinCollection: false);
+    }
 }

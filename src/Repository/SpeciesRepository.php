@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Species;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,28 +17,23 @@ class SpeciesRepository extends ServiceEntityRepository
         parent::__construct($registry, Species::class);
     }
 
-    //    /**
-    //     * @return Species[] Returns an array of Species objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Returns a paginated subset of all species.
+     *
+     * The Doctrine Paginator executes two queries automatically:
+     * - a COUNT(*) to get the total (used by API Platform for totalItems)
+     * - a SELECT with LIMIT/OFFSET for the current page items
+     *
+     * @return Paginator<Species>
+     */
+    public function findPaginated(int $offset, int $limit): Paginator
+    {
+        $query = $this->createQueryBuilder('s')
+            ->orderBy('s.id', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery();
 
-    //    public function findOneBySomeField($value): ?Species
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return new Paginator($query, fetchJoinCollection: false);
+    }
 }
