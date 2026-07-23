@@ -1,81 +1,76 @@
-# 🐘 Symfony Docker Template
+# Plant Tracker API 🌱
 
-Personal Symfony 8 + FrankenPHP + PostgreSQL + Docker template, ready to use.
+A RESTful JSON-LD API built with **Symfony 8** and **API Platform v4** for tracking houseplants. 
+
+- Users manage their own plant collection
+- Species are maintained by administrators
 
 ## Stack
 
-- **PHP 8.5** / **Symfony 8**
-- **FrankenPHP** (modern PHP server, replaces Nginx + PHP-FPM)
-- **PostgreSQL 16**
-- **Docker** / Docker Compose
-- **PHP CS Fixer** (automatic PSR-12 code formatting)
-- **PHPStan** (static analysis, level 6)
-- **GrumPHP** (automatic Git hooks)
+- **Symfony 8** · **API Platform v4** · **Doctrine ORM**
+- **JWT** (`lexik`) + **Refresh tokens** (`gesdinet`) · **Rate limiting** (Symfony RateLimiter)
+- **PHPStan** (max) · **PHP-CS-Fixer** · **GrumPHP** · **PHPUnit 13**
+- **CI**: GitHub Actions (Docker Compose)
 
-## Requirements
-
-- [Docker](https://docs.docker.com/get-docker/) + Docker Compose
-- [Git](https://git-scm.com/)
-- Make
-
-## Start a new project
+## Getting Started
 
 ```bash
-# 1. Use this template from GitHub ("Use this template" button)
-# 2. Clone your new repo
-git clone git@github.com:YOUR_USERNAME/my-project.git
-cd my-project
-
-# 3. Start Docker
+git clone <repo-url> && cd plant-tracker-api
 make start
+make migrate
+make fixtures
+docker compose exec php bin/console lexik:jwt:generate-keypair
 ```
 
-The app is available at **https://localhost** 🎉
+> The keypair command generates `config/jwt/private.pem` and `public.pem`, and writes the paths + passphrase into `.env.local` automatically. No manual `.env` editing needed.
 
-## Available commands
+API: `http://localhost` — Swagger UI: `http://localhost/api`
 
 | Command | Description |
 |---|---|
 | `make start` | Start Docker containers |
 | `make stop` | Stop containers |
-| `make bash` | Open a terminal inside the PHP container |
-| `make db-create` | Create the database |
-| `make migration` | Generate a Doctrine migration |
 | `make migrate` | Run migrations |
-| `make cs-fix` | Format code (PHP CS Fixer) |
-| `make phpstan` | Run static analysis |
-| `make fix-perms` | Fix file permissions |
+| `make fixtures` | Load seed data |
+| `make run-tests` | Run PHPUnit |
+| `make phpstan` | Static analysis |
+| `make cs-fix` | Auto-format code |
 
-## Environment variables
+## API
 
-Default values are defined in `compose.yaml`. To override them locally, create a `.env.local` file at the root:
+All endpoints use `application/ld+json`. Authenticate via `POST /auth`, then pass `Authorization: Bearer <token>`.
 
-```env
-POSTGRES_USER=my_user
-POSTGRES_PASSWORD=my_password
-POSTGRES_DB=my_database
-```
+| Endpoint | Method | Access |
+|---|---|---|
+| `/api/register` | `POST` | Public |
+| `/auth` | `POST` | Public |
+| `/api/token/refresh` | `POST` | Public |
+| `/api/logout` | `POST` | Authenticated |
+| `/api/plants` | `GET` `POST` | Authenticated (own plants only) |
+| `/api/plants/{id}` | `GET` `PUT` `DELETE` | Authenticated (own plants only) |
+| `/api/species` | `GET` | Authenticated |
+| `/api/species` `/{id}` | `POST` `PUT` `DELETE` | Admin |
+| `/api/users` | `GET` `DELETE` | Admin |
 
-> ⚠️ The `.env.local` file is listed in `.gitignore`
+## Notable Design Choices
 
-## Code quality
+- **DTOs** — separate Input/Output classes keep the API contract decoupled from the database schema.
+- **Custom State Providers** — return typed DTOs with server-side pagination (10 items/page).
+- **Double ownership enforcement** — plants are filtered by owner both at the SQL level (`PlantOwnerExtension`) and in `PlantProvider`.
+- **Rate limiting** — brute-force protection on `POST /auth` and `POST /api/register`.
+
+## Tests
 
 ```bash
-# Automatically format code
-make cs-fix
-
-# Run static analysis
-make phpstan
+make run-tests
 ```
 
-## Project structure
+Functional tests cover: 401/403 access control, ownership isolation, response structure, and input validation (400/422). JWT tokens are generated directly via the service manager to bypass the rate limiter.
 
-```
-├── compose.yaml            # Docker configuration
-├── compose.override.yaml   # Docker overrides (dev)
-├── Dockerfile              # PHP/FrankenPHP image
-├── Makefile                # Daily commands
-├── .php-cs-fixer.dist.php
-├── phpstan.dist.neon
-└── src/                    # Symfony source code
-```
+## Fixture Accounts
+
+| Email | Password | Role |
+|---|---|---|
+| `admin@plant.dev` | `password` | Admin |
+| `user1@plant.dev` | `password` | User |
+| `user2@plant.dev` | `password` | User |
