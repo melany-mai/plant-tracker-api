@@ -8,8 +8,8 @@ use App\Entity\Plant;
 
 #[ApiResource(
     shortName: 'Plant',
-    operations: [],
     types: ['Plant'],
+    operations: [],
     normalizationContext: ['skip_null_values' => false],
 )]
 class PlantOutput
@@ -22,6 +22,7 @@ class PlantOutput
     public ?string $photo;
     public ?string $notes;
     public \DateTimeImmutable $acquiredAt;
+    public int $speciesId;
     public string $speciesCommonName;
     public string $speciesLatinName;
     public ?\DateTimeInterface $createdAt;
@@ -37,6 +38,7 @@ class PlantOutput
         $output->photo = $plant->getPhoto();
         $output->notes = $plant->getNotes();
         $output->acquiredAt = $plant->getAcquiredAt();
+        $output->speciesId = $plant->getSpecies()->getId();
         $output->speciesCommonName = $plant->getSpecies()->getCommonName();
         $output->speciesLatinName = $plant->getSpecies()->getLatinName();
         $output->createdAt = $plant->getCreatedAt();
