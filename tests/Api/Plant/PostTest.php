@@ -97,6 +97,7 @@ class PostTest extends AbstractApiTestCase
         $this->assertArrayHasKey('wateringFrequencyDays', $plant);
         $this->assertArrayHasKey('lastWateredAt', $plant);
         $this->assertArrayHasKey('acquiredAt', $plant);
+        $this->assertArrayHasKey('speciesId', $plant);
         $this->assertArrayHasKey('speciesCommonName', $plant);
         $this->assertArrayHasKey('speciesLatinName', $plant);
         $this->assertArrayHasKey('createdAt', $plant);

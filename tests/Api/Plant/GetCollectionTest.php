@@ -143,6 +143,7 @@ class GetCollectionTest extends AbstractApiTestCase
         $this->assertArrayHasKey('updatedAt', $plant);
 
         // Species fields denormalised directly in the output (no nested object)
+        $this->assertArrayHasKey('speciesId', $plant);
         $this->assertArrayHasKey('speciesCommonName', $plant);
         $this->assertArrayHasKey('speciesLatinName', $plant);
 
